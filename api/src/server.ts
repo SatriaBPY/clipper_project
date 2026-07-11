@@ -5,15 +5,7 @@ import { config } from './config';
 import { jobsRoutes } from './routes/jobs';
 
 const fastify = Fastify({
-  logger: {
-    transport: {
-      target: 'pino-pretty',
-      options: {
-        translateTime: 'HH:MM:ss Z',
-        ignore: 'pid,hostname',
-      },
-    },
-  },
+  logger: true,
 });
 
 async function main() {

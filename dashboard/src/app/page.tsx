@@ -35,7 +35,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [transcriptMap, setTranscriptMap] = useState<Record<string, string>>({});
 
-  const API_BASE = "http://localhost:3001";
+  const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3009";
 
   // Fetch all jobs
   const fetchJobs = async () => {
