@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   redis:
@@ -37,8 +37,8 @@ services:
       - DEEPGRAM_API_KEY=${DEEPGRAM_API_KEY}
       - GROQ_API_KEY=${GROQ_API_KEY}
       - DEFAULT_TRANSCRIPTION_PROVIDER=${DEFAULT_TRANSCRIPTION_PROVIDER:-deepgram}
-      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
-      - OPENROUTER_MODEL=${OPENROUTER_MODEL:-anthropic/claude-sonnet-4.6}
+      - 9ROUTER_KEY=${9ROUTER_KEY}
+      - 9ROUTER_MODEL=${9ROUTER_MODEL:newcombo}
       - DATABASE_URL=file:/storage/db.sqlite
       - REDIS_URL=redis://redis:6379
       - STORAGE_PATH=/storage
