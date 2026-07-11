@@ -110,4 +110,5 @@ Monorepo akan dibagi menjadi beberapa komponen utama:
   5. Menyesuaikan port mapping eksternal Redis di [docker-compose.yml](file:///D:/vibecoding/clipper_forge/docker-compose.yml) menjadi `"6374:6379"` agar port `6374` pada host memetakan port `6379` internal container, menyelaraskannya dengan konfigurasi host di `.env`.
   6. Mengatur Next.js rewrites pada [dashboard/next.config.ts](file:///D:/vibecoding/clipper_forge/dashboard/next.config.ts) agar memproksi path `/api-server/:path*` ke internal endpoint Docker Compose `http://api:3009/:path*`.
   7. Mengubah `API_BASE` pada [dashboard/src/app/page.tsx](file:///D:/vibecoding/clipper_forge/dashboard/src/app/page.tsx) menjadi relative path `"/api-server"` untuk menyelesaikan masalah CORS dan ketidakcocokan localhost client-side vs server-side secara tuntas.
-  8. Meminta user untuk melakukan rebuild dan restart container menggunakan `docker compose build --no-cache` dan `docker compose up -d`.
+  8. Menambahkan perintah `npx prisma db push` pada service `api` di [docker-compose.yml](file:///D:/vibecoding/clipper_forge/docker-compose.yml) agar database SQLite lokal ter-generate secara otomatis saat container dinyalakan.
+  9. Meminta user untuk melakukan rebuild dan restart container menggunakan `docker compose build --no-cache` dan `docker compose up -d`.

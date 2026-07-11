@@ -24,6 +24,7 @@ services:
       - ./storage:/storage
     depends_on:
       - redis
+    command: sh -c "npx prisma db push --schema=../prisma/schema.prisma && npm start"
     restart: always
 
   worker:
