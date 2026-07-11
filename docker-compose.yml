@@ -15,11 +15,11 @@ services:
       dockerfile: api/Dockerfile
     container_name: clipforge-api
     ports:
-      - "3001:3001"
+      - "3009:3009"
     environment:
-      - PORT=3001
+      - PORT=3009
       - DATABASE_URL=file:/storage/db.sqlite
-      - REDIS_URL=redis://redis:6379
+      - REDIS_URL=redis://redis:6374
       - STORAGE_PATH=/storage
       - DEFAULT_TRANSCRIPTION_PROVIDER=${DEFAULT_TRANSCRIPTION_PROVIDER:-deepgram}
     volumes:
@@ -40,7 +40,7 @@ services:
       - NINEROUTER_KEY=${NINEROUTER_KEY}
       - NINEROUTER_MODEL=${NINEROUTER_MODEL:newcombo}
       - DATABASE_URL=file:/storage/db.sqlite
-      - REDIS_URL=redis://redis:6379
+      - REDIS_URL=redis://redis:6374
       - STORAGE_PATH=/storage
       - FFMPEG_PRESET=${FFMPEG_PRESET:-veryfast}
       - MAX_OUTPUT_RESOLUTION=${MAX_OUTPUT_RESOLUTION:-720}
