@@ -1,7 +1,14 @@
-FROM node:20-alpine
+FROM node:20-slim
 
 # Install system dependencies needed for video processing and Prisma
-RUN apk add --no-cache ffmpeg yt-dlp python3 libc6-compat openssl
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ffmpeg \
+    python3 \
+    curl \
+    openssl \
+    && curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp \
+    && chmod a+rx /usr/local/bin/yt-dlp \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/src/app
 
