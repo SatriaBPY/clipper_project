@@ -19,7 +19,7 @@ export function downloadVideo(
     }
 
     const videoPath = path.join(jobDir, 'source.mp4');
-    const audioPath = path.join(jobDir, 'source.wav');
+    const audioPath = path.join(jobDir, 'source.mp3');
 
     onProgress('Downloading video via yt-dlp...');
 
@@ -56,16 +56,18 @@ export function downloadVideo(
         return reject(new Error(`yt-dlp failed with exit code ${code}. Error: ${stderrData}`));
       }
 
-      onProgress('Extracting audio to 16kHz mono WAV...');
+      onProgress('Extracting audio to 16kHz mono MP3...');
 
-      // Jalankan ffmpeg untuk extract audio mono 16kHz
+      // Jalankan ffmpeg untuk extract audio mono MP3 32k
       const ffmpeg = spawn('ffmpeg', [
         '-y', // Overwrite if exists
         '-i',
         videoPath,
         '-vn',
         '-acodec',
-        'pcm_s16le',
+        'libmp3lame',
+        '-b:a',
+        '32k',
         '-ac',
         '1',
         '-ar',

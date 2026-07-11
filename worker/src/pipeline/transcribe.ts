@@ -30,10 +30,10 @@ export async function transcribeAudio(
     try {
       const fileBuffer = fs.readFileSync(audioPath);
       // Use standard Node Blob from buffer or global Blob
-      const fileBlob = new Blob([fileBuffer], { type: 'audio/wav' });
+      const fileBlob = new Blob([fileBuffer], { type: 'audio/mp3' });
 
       const formData = new FormData();
-      formData.append('file', fileBlob, 'audio.wav');
+      formData.append('file', fileBlob, 'audio.mp3');
       formData.append('model', 'whisper-large-v3');
       formData.append('response_format', 'verbose_json');
       formData.append('timestamp_granularities[]', 'word');
@@ -86,7 +86,7 @@ export async function transcribeAudio(
       {
         headers: {
           Authorization: `Token ${config.DEEPGRAM_API_KEY}`,
-          'Content-Type': 'audio/wav',
+          'Content-Type': 'audio/mpeg',
         },
         maxContentLength: Infinity,
         maxBodyLength: Infinity,

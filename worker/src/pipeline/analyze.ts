@@ -62,12 +62,16 @@ export async function analyzeTranscript(
 
   const prompt = `
 Anda adalah produser konten video pendek profesional (TikTok, YouTube Shorts, Instagram Reels).
-Tugas Anda adalah menganalisis transkrip podcast berikut dan memilih 3 sampai 10 momen terbaik ("best moments" / "clips") yang paling menarik untuk dijadikan video pendek terpisah.
+Tugas Anda adalah menganalisis transkrip podcast berikut secara mendalam, memahami konteks obrolan, lalu memilih momen-momen terbaik ("best moments" / "clips") yang paling menarik untuk dijadikan video pendek terpisah.
 
 Kriteria pemilihan segmen:
-1. Menarik (mengandung hook yang kuat di awal, insight berharga, kontroversi, humor, atau emosi tinggi).
+1. Menarik (mengandung hook yang kuat di awal, insight berharga, pernyataan kontroversial, humor, atau emosi tinggi).
 2. Self-contained (pesan/ide tersampaikan utuh dari awal sampai akhir, tidak terputus secara canggung).
-3. Durasi setiap segmen harus berkisar antara 30 hingga 180 detik (0.5 - 3 menit).
+3. Durasi setiap segmen harus berkisar antara 15 hingga 90 detik (sangat ideal untuk format Shorts/Reels/TikTok).
+
+PENTING:
+- Analisis transkrip dengan seksama. Jangan memilih segmen yang isinya obrolan basa-basi atau jeda diam yang lama.
+- Hasilkan minimal 4 hingga 8 segmen terbaik jika durasi video mencukupi (misal video > 10 menit). Jika video pendek, sesuaikan jumlahnya secara logis.
 
 Format input transkrip menggunakan tanda kurung siku untuk waktu mulai kalimat dalam detik, misalnya: [12.50] Ini adalah kalimat.
 
