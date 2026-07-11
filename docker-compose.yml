@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: clipforge-redis
+    command: redis-server --save "" --appendonly no
+    ports:
+      - "6379:6379"
+    restart: always
+
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    container_name: clipforge-api
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - DATABASE_URL=file:/storage/db.sqlite
+      - REDIS_URL=redis://redis:6379
+      - STORAGE_PATH=/storage
+    volumes:
+      - ./storage:/storage
+    depends_on:
+      - redis
+    restart: always
+
+  worker:
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+    container_name: clipforge-worker
+    environment:
+      - DEEPGRAM_API_KEY=${DEEPGRAM_API_KEY}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - OPENROUTER_MODEL=${OPENROUTER_MODEL:-anthropic/claude-sonnet-4.6}
+      - DATABASE_URL=file:/storage/db.sqlite
+      - REDIS_URL=redis://redis:6379
+      - STORAGE_PATH=/storage
+      - FFMPEG_PRESET=${FFMPEG_PRESET:-veryfast}
+      - MAX_OUTPUT_RESOLUTION=${MAX_OUTPUT_RESOLUTION:-720}
+    volumes:
+      - ./storage:/storage
+    depends_on:
+      - redis
+    restart: always
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: dashboard/Dockerfile
+    container_name: clipforge-dashboard
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+    depends_on:
+      - api
+    restart: always

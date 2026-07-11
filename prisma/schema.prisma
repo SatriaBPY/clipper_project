@@ -1,0 +1,46 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Job {
+  id                    String      @id @default(uuid())
+  youtubeUrl            String
+  callbackUrl           String?
+  transcriptionProvider String      @default("deepgram")
+  status                String      // pending, downloading, transcribing, analyzing, cutting, captioning, done, failed
+  error                 String?
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+  transcript            Transcript?
+  clips                 Clip[]
+}
+
+model Transcript {
+  id             String   @id @default(uuid())
+  jobId          String   @unique
+  job            Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  fullText       String
+  wordTimestamps String   // JSON stringified array [{word, start, end, confidence}]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Clip {
+  id        String   @id @default(uuid())
+  jobId     String
+  job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  startTime Float
+  endTime   Float
+  title     String
+  reason    String
+  filePath  String?
+  status    String   // pending, processing, done, failed
+  error     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
