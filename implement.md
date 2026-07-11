@@ -73,9 +73,10 @@ Monorepo akan dibagi menjadi beberapa komponen utama:
    - `/api/src/config.ts` (Tambah default config)
    - `/api/src/routes/jobs.ts` (Ubah endpoint POST untuk menerima `transcription_provider` di body dan menyimpannya di DB & queue)
 3. **BullMQ Worker (/worker):**
-   - `/worker/src/config.ts` (Tambah `GROQ_API_KEY` dan default provider)
+   - `/worker/src/config.ts` (Tambah `GROQ_API_KEY`, ganti `OPENROUTER_*` dengan `NINEROUTER_KEY`, `NINEROUTER_MODEL`, dan `NINEROUTER_URL`)
    - `/worker/src/index.ts` (Terima `transcriptionProvider` dari payload queue dan kirim ke pipeline transkripsi)
    - `/worker/src/pipeline/transcribe.ts` (Tambahkan cabang kondisi untuk memanggil Groq API `whisper-large-v3` menggunakan Axios + FormData dengan response format `verbose_json` dan granularity `word`)
+   - `/worker/src/pipeline/analyze.ts` (Migrasikan pemanggilan LLM dari OpenRouter API ke NineRouter API menggunakan endpoint, key, dan model NineRouter yang dikonfigurasi)
 4. **Next.js Dashboard (/dashboard):**
    - `/dashboard/src/app/page.tsx` (Tambahkan opsi dropdown/radio pilihan provider transkripsi di form "New Clipper Job" dan kirim ke backend)
 

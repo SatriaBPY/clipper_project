@@ -51,14 +51,14 @@ export async function analyzeTranscript(
   words: WordTimestamp[],
   onProgress: (status: string) => void
 ): Promise<Segment[]> {
-  if (!config.OPENROUTER_API_KEY) {
-    throw new Error('OPENROUTER_API_KEY is not set in environment variables');
+  if (!config.NINEROUTER_KEY) {
+    throw new Error('NINEROUTER_KEY is not set in environment variables');
   }
 
   onProgress('Formatting transcript for LLM analysis...');
   const formattedText = formatTranscript(words);
 
-  onProgress(`Calling OpenRouter LLM (${config.OPENROUTER_MODEL}) to detect best moments...`);
+  onProgress(`Calling NineRouter LLM (${config.NINEROUTER_MODEL}) to detect best moments...`);
 
   const prompt = `
 Anda adalah produser konten video pendek profesional (TikTok, YouTube Shorts, Instagram Reels).
@@ -86,10 +86,11 @@ ${formattedText}
 `;
 
   try {
+    const endpoint = `${config.NINEROUTER_URL.replace(/\/$/, '')}/chat/completions`;
     const response = await axios.post(
-      'https://openrouter.ai/api/v1/chat/completions',
+      endpoint,
       {
-        model: config.OPENROUTER_MODEL,
+        model: config.NINEROUTER_MODEL,
         messages: [
           {
             role: 'system',
@@ -104,7 +105,7 @@ ${formattedText}
       },
       {
         headers: {
-          Authorization: `Bearer ${config.OPENROUTER_API_KEY}`,
+          Authorization: `Bearer ${config.NINEROUTER_KEY}`,
           'Content-Type': 'application/json',
           'HTTP-Referer': 'https://github.com/google-deepmind/clipforge', // Optional site URL
           'X-Title': 'ClipForge', // Optional site name
@@ -114,7 +115,7 @@ ${formattedText}
 
     let content = response.data?.choices?.[0]?.message?.content;
     if (!content) {
-      throw new Error('No content returned from OpenRouter');
+      throw new Error('No content returned from NineRouter');
     }
 
     // Bersihkan codeblock markdown jika ada
@@ -147,6 +148,6 @@ ${formattedText}
     return validatedSegments;
   } catch (error: any) {
     const errorDetails = error.response?.data ? JSON.stringify(error.response.data) : error.message;
-    throw new Error(`OpenRouter analysis failed: ${errorDetails}`);
+    throw new Error(`NineRouter analysis failed: ${errorDetails}`);
   }
 }

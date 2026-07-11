@@ -33,12 +33,15 @@ services:
       context: .
       dockerfile: worker/Dockerfile
     container_name: clipforge-worker
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
       - DEEPGRAM_API_KEY=${DEEPGRAM_API_KEY}
       - GROQ_API_KEY=${GROQ_API_KEY}
       - DEFAULT_TRANSCRIPTION_PROVIDER=${DEFAULT_TRANSCRIPTION_PROVIDER:-deepgram}
       - NINEROUTER_KEY=${NINEROUTER_KEY}
-      - NINEROUTER_MODEL=${NINEROUTER_MODEL:newcombo}
+      - NINEROUTER_MODEL=${NINEROUTER_MODEL:-newcombo}
+      - NINEROUTER_URL=${NINEROUTER_URL:-http://host.docker.internal:20128/v1}
       - DATABASE_URL=file:/storage/db.sqlite
       - REDIS_URL=redis://redis:6374
       - STORAGE_PATH=/storage
