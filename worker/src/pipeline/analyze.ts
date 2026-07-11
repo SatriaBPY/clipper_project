@@ -115,7 +115,7 @@ ${formattedText}
 
     let content = response.data?.choices?.[0]?.message?.content;
     if (!content) {
-      throw new Error('No content returned from NineRouter');
+      throw new Error(`No content returned from NineRouter. Response data: ${JSON.stringify(response.data)}`);
     }
 
     // Bersihkan codeblock markdown jika ada
