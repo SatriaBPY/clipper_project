@@ -1,7 +1,7 @@
 FROM node:20-alpine
 
 # Install system dependencies needed for video processing and Prisma
-RUN apk add --no-cache ffmpeg yt-dlp python3 libc6-compat openssl1.1-compat
+RUN apk add --no-cache ffmpeg yt-dlp python3 libc6-compat openssl
 
 WORKDIR /usr/src/app
 

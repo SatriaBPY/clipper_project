@@ -99,3 +99,10 @@ Monorepo akan dibagi menjadi beberapa komponen utama:
 4. Update `/api/src/routes/jobs.ts` untuk menangani field `transcription_provider`.
 5. Update Dashboard UI `/dashboard/src/app/page.tsx` agar user bisa memilih provider.
 6. Lakukan pengujian pipeline secara manual.
+
+## 6. Perbaikan Isu Kompatibilitas Prisma di Docker (Laptop Kentang)
+- **Masalah**: Container `api` (dan `worker`) mengalami error `PrismaClientInitializationError: Unable to require(...)` karena runtime client mencari `libssl.so.1.1` di container berbasis Alpine (Node 20-alpine) yang menggunakan OpenSSL 3.0.x secara default.
+- **Solusi**:
+  1. Menambahkan `linux-musl-openssl-3.0.x` ke dalam `binaryTargets` pada generator client di [schema.prisma](file:///D:/vibecoding/clipper_forge/prisma/schema.prisma) agar Prisma men-download engine binary yang cocok dengan OpenSSL 3.
+  2. Mengubah dependensi OS di [api/Dockerfile](file:///D:/vibecoding/clipper_forge/api/Dockerfile) dan [worker/Dockerfile](file:///D:/vibecoding/clipper_forge/worker/Dockerfile) untuk menginstal paket `openssl` (OpenSSL 3.x) sebagai pengganti paket `openssl1.1-compat` yang sudah tidak didukung secara memadai di repositori Alpine baru.
+  3. Meminta user untuk melakukan rebuild container menggunakan command `docker compose build --no-cache` agar perubahan library OS dan client generator ini ter-apply dengan benar.
