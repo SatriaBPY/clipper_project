@@ -26,6 +26,8 @@ export function downloadVideo(
     // Jalankan yt-dlp
     // -f "bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/best[height<=720]/best"
     const ytDlp = spawn('yt-dlp', [
+      '--js-runtimes',
+      'node',
       '-f',
       'bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/best[height<=720]/best',
       '--merge-output-format',
