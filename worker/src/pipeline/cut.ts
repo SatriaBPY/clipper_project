@@ -34,7 +34,7 @@ export function cutAndBurnCaption(
       '-i',
       sourceVideoPath,
       '-vf',
-      `scale=-2:'min(${config.MAX_OUTPUT_RESOLUTION},ih)',subtitles=${relativeSubPath}`,
+      `crop=w='2*trunc(min(iw\\,ih*9/16)/2)':h='2*trunc(min(ih\\,iw*16/9)/2)',scale=-2:'min(${config.MAX_OUTPUT_RESOLUTION},ih)',subtitles=${relativeSubPath}`,
       '-c:v',
       'libx264',
       '-preset',

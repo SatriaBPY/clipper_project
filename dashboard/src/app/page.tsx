@@ -132,6 +132,27 @@ export default function Home() {
     }
   };
 
+  const handleDeleteClip = async (clipId: string) => {
+    if (!confirm("Are you sure you want to delete this clip? This will delete the video file from the server and remove it from the database.")) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/clips/${clipId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || "Failed to delete clip");
+      }
+
+      await fetchJobs();
+    } catch (err: any) {
+      alert(`Error: ${err.message}`);
+    }
+  };
+
   const selectedJob = jobs.find((j) => j.id === selectedJobId);
 
   const getStatusBadgeClass = (status: string) => {
@@ -441,28 +462,59 @@ export default function Home() {
                               <span>Duration: {Math.round(clip.end_time - clip.start_time)}s</span>
                             </div>
                             <div className="clip-reason">{clip.reason}</div>
-                            {clip.status === "done" && (
-                              <a
-                                href={videoUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="btn"
-                                style={{ background: "rgba(255,255,255,0.08)", color: "white", marginTop: "auto" }}
-                              >
-                                <svg
-                                  width="16"
-                                  height="16"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
+                            {(clip.status === "done" || clip.status === "failed") && (
+                              <div style={{ display: "flex", gap: "0.5rem", marginTop: "auto", width: "100%" }}>
+                                {clip.status === "done" && (
+                                  <a
+                                    href={videoUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="btn"
+                                    style={{ background: "rgba(255,255,255,0.08)", color: "white", flex: 1, marginTop: 0 }}
+                                  >
+                                    <svg
+                                      width="16"
+                                      height="16"
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="2"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    >
+                                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                                    </svg>
+                                    Open
+                                  </a>
+                                )}
+                                <button
+                                  onClick={() => handleDeleteClip(clip.id)}
+                                  className="btn"
+                                  style={{
+                                    background: "rgba(231, 76, 60, 0.15)",
+                                    color: "var(--status-failed)",
+                                    border: "1px solid rgba(231, 76, 60, 0.2)",
+                                    flex: clip.status === "done" ? "0 0 45px" : "1",
+                                    marginTop: 0,
+                                    padding: "0.75rem",
+                                  }}
+                                  title="Delete Clip"
                                 >
-                                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
-                                </svg>
-                                Open Clip
-                              </a>
+                                  <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  >
+                                    <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6" />
+                                  </svg>
+                                  {clip.status !== "done" && " Delete Clip"}
+                                </button>
+                              </div>
                             )}
                           </div>
                         </div>

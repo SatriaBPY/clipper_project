@@ -118,3 +118,27 @@ Monorepo akan dibagi menjadi beberapa komponen utama:
   13. Mengubah proses ekstraksi audio dari file WAV mentah yang besar ke format MP3 mono terkompresi (32kbps) di [worker/src/pipeline/download.ts](file:///D:/vibecoding/clipper_forge/worker/src/pipeline/download.ts), dan memperbarui parser/mime-type pengiriman file di [worker/src/pipeline/transcribe.ts](file:///D:/vibecoding/clipper_forge/worker/src/pipeline/transcribe.ts) untuk mengatasi error "Request Entity Too Large (25MB limit)" pada Groq Whisper API.
   14. Mengoptimalkan prompt analisis LLM di [worker/src/pipeline/analyze.ts](file:///D:/vibecoding/clipper_forge/worker/src/pipeline/analyze.ts) dengan meminta hasil minimal 4 hingga 8 segmen (jika video panjang) dan memperlebar durasi segmen menjadi 15-90 detik agar lebih dinamis serta cocok untuk Shorts/Reels/TikTok.
   15. Meminta user untuk melakukan rebuild dan restart container menggunakan `docker compose build --no-cache` dan `docker compose up -d`.
+
+## 7. Perubahan Format Video ke 9:16 (Vertical Crop untuk Shorts)
+- **Masalah**: Hasil klip video masih berformat landscape (16:9), sehingga tidak bisa langsung digunakan untuk Shorts/Reels/TikTok.
+- **Solusi**:
+  1. Memodifikasi [worker/src/pipeline/cut.ts](file:///D:/vibecoding/clipper_forge/worker/src/pipeline/cut.ts) untuk melakukan center cropping ke aspect ratio 9:16 menggunakan filter `crop` pada ffmpeg sebelum dilakukan scaling dan pembakaran subtitle. Formula crop: `crop='2*trunc(min(iw\\,ih*9/16)/2)':'2*trunc(min(ih\\,iw*16/9)/2)'`.
+  2. Menyesuaikan resolusi canvas dan posisi subtitle di [worker/src/pipeline/caption.ts](file:///D:/vibecoding/clipper_forge/worker/src/pipeline/caption.ts) agar cocok dengan format vertical. Canvas diubah menjadi `PlayResX: 720` dan `PlayResY: 1280`. `MarginV` ditingkatkan menjadi `480` agar teks subtitle berada di area tengah-bawah yang aman dari overlap UI media sosial. Ukuran `Fontsize` diubah menjadi `42` agar lebih jelas terbaca di layar HP.
+- **Daftar File yang Diubah**:
+  - [worker/src/pipeline/cut.ts](file:///D:/vibecoding/clipper_forge/worker/src/pipeline/cut.ts)
+  - [worker/src/pipeline/caption.ts](file:///D:/vibecoding/clipper_forge/worker/src/pipeline/caption.ts)
+- **Dampak Ke Sistem**: Hasil klip baru akan berformat vertical (9:16). Tidak ada perubahan skema database.
+- **Estimasi Kompleksitas**: Rendah
+
+## 8. Fitur Hapus Klip (Delete Clip Feature)
+- **Masalah**: User tidak bisa menghapus file klip video dan data klip dari database melalui dashboard setelah klip selesai diproses.
+- **Solusi**:
+  1. Menambahkan endpoint `DELETE /clips/:id` di [api/src/routes/jobs.ts](file:///D:/vibecoding/clipper_forge/api/src/routes/jobs.ts). Endpoint ini akan mendeteksi path file `.mp4` dan `.ass` yang terkait, menghapusnya dari filesystem, dan menghapus record klip dari database.
+  2. Menambahkan tombol "Delete Clip" di kartu klip pada [dashboard/src/app/page.tsx](file:///D:/vibecoding/clipper_forge/dashboard/src/app/page.tsx). Tombol ini akan memanggil API `DELETE /clips/:id` dan me-refresh daftar pekerjaan di dashboard.
+  3. Menyesuaikan styling `.clip-player-wrapper` di [dashboard/src/app/globals.css](file:///D:/vibecoding/clipper_forge/dashboard/src/app/globals.css) dari `aspect-ratio: 16/9` menjadi `9/16` dengan `max-height: 480px` agar klip video Shorts vertikal ditampilkan secara proporsional.
+- **Daftar File yang Diubah**:
+  - [api/src/routes/jobs.ts](file:///D:/vibecoding/clipper_forge/api/src/routes/jobs.ts)
+  - [dashboard/src/app/page.tsx](file:///D:/vibecoding/clipper_forge/dashboard/src/app/page.tsx)
+  - [dashboard/src/app/globals.css](file:///D:/vibecoding/clipper_forge/dashboard/src/app/globals.css)
+- **Estimasi Kompleksitas**: Rendah
+

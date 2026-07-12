@@ -362,8 +362,9 @@ body::after {
 .clip-player-wrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 16/9;
+  aspect-ratio: 9/16;
   background: black;
+  max-height: 480px;
 }
 
 .clip-player {

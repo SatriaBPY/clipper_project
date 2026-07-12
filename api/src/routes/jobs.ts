@@ -2,6 +2,7 @@ import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 import { PrismaClient } from '@prisma/client';
 import { Queue } from 'bullmq';
 import IORedis from 'ioredis';
+import fs from 'fs';
 import { config } from '../config';
 
 const prisma = new PrismaClient();
@@ -182,6 +183,42 @@ export async function jobsRoutes(fastify: FastifyInstance, options: FastifyPlugi
     } catch (error: any) {
       request.log.error(error);
       return reply.status(500).send({ error: 'Failed to fetch clips' });
+    }
+  });
+
+  // DELETE /clips/:id
+  fastify.delete<{ Params: { id: string } }>('/clips/:id', async (request, reply) => {
+    const { id } = request.params;
+
+    try {
+      const clip = await prisma.clip.findUnique({
+        where: { id },
+      });
+
+      if (!clip) {
+        return reply.status(404).send({ error: 'Clip not found' });
+      }
+
+      // Hapus file video dan subtitle jika ada di filesystem
+      if (clip.filePath) {
+        if (fs.existsSync(clip.filePath)) {
+          fs.unlinkSync(clip.filePath);
+        }
+        const assPath = clip.filePath.replace(/\.mp4$/, '.ass');
+        if (fs.existsSync(assPath)) {
+          fs.unlinkSync(assPath);
+        }
+      }
+
+      // Hapus dari database
+      await prisma.clip.delete({
+        where: { id },
+      });
+
+      return { success: true };
+    } catch (error: any) {
+      request.log.error(error);
+      return reply.status(500).send({ error: 'Failed to delete clip', details: error.message });
     }
   });
 }
